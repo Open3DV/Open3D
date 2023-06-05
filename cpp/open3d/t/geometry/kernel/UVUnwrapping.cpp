@@ -13,6 +13,9 @@
 #include <UVAtlas.h>
 // clang-format on
 
+void __cdecl UVAtlasDebugPrintf(unsigned int lvl, _In_z_ _Printf_format_string_ const char* szFormat, ...)
+{ }
+
 namespace open3d {
 namespace t {
 namespace geometry {

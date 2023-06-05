@@ -19,6 +19,7 @@ class Scene;
 class View;
 class Viewport;
 class ColorGrading;
+struct ToneMapper;
 }  // namespace filament
 /// @endcond
 
@@ -100,6 +101,7 @@ private:
     FilamentResourceManager& resource_mgr_;
     filament::View* view_ = nullptr;
     filament::ColorGrading* color_grading_ = nullptr;
+    filament::ToneMapper* tone_mapper_ = nullptr;
 };
 
 }  // namespace rendering

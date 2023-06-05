@@ -21,6 +21,7 @@
 
 #include <filament/Camera.h>
 #include <filament/ColorGrading.h>
+#include <filament/ToneMapper.h>
 #include <filament/Engine.h>
 #include <filament/RenderableManager.h>
 #include <filament/Scene.h>
@@ -57,7 +58,9 @@ FilamentView::FilamentView(filament::Engine& engine,
                            FilamentResourceManager& resource_mgr)
     : engine_(engine), resource_mgr_(resource_mgr) {
     view_ = engine_.createView();
-    view_->setSampleCount(4);
+    auto msaa_options = view_->getMultiSampleAntiAliasingOptions();
+    msaa_options.sampleCount = 4;
+    view_->setMultiSampleAntiAliasingOptions(msaa_options);
     SetAntiAliasing(true, false);
     SetPostProcessing(true);
     SetAmbientOcclusion(true, false);
@@ -92,6 +95,9 @@ FilamentView::~FilamentView() {
     camera_.reset();
     engine_.destroy(view_);
     engine_.destroy(color_grading_);
+    if (tone_mapper_ != nullptr) {
+      delete tone_mapper_;
+    }
 }
 
 View::Mode FilamentView::GetMode() const { return mode_; }
@@ -140,9 +146,15 @@ void FilamentView::SetWireframe(bool enable) {
     }
 }
 
-void FilamentView::SetSampleCount(int n) { view_->setSampleCount(n); }
+void FilamentView::SetSampleCount(int n) {
+  auto msaa_options = view_->getMultiSampleAntiAliasingOptions();
+  msaa_options.sampleCount = n;
+  view_->setMultiSampleAntiAliasingOptions(msaa_options);
+}
 
-int FilamentView::GetSampleCount() const { return view_->getSampleCount(); }
+int FilamentView::GetSampleCount() const {
+  return view_->getMultiSampleAntiAliasingOptions().sampleCount;
+}
 
 void FilamentView::SetViewport(std::int32_t x,
                                std::int32_t y,
@@ -227,26 +239,27 @@ void FilamentView::SetColorGrading(const ColorGradingParams& color_grading) {
             break;
     }
 
-    filament::ColorGrading::ToneMapping tm =
-            filament::ColorGrading::ToneMapping::LINEAR;
+    if (tone_mapper_ != nullptr) {
+        delete tone_mapper_;
+        tone_mapper_ = nullptr;
+    }
+
     switch (color_grading.GetToneMapping()) {
         case ColorGradingParams::ToneMapping::kAcesLegacy:
-            tm = filament::ColorGrading::ToneMapping::ACES_LEGACY;
+            tone_mapper_ = new filament::ACESLegacyToneMapper;
             break;
         case ColorGradingParams::ToneMapping::kAces:
-            tm = filament::ColorGrading::ToneMapping::ACES;
+            tone_mapper_ = new filament::ACESToneMapper;
             break;
         case ColorGradingParams::ToneMapping::kFilmic:
-            tm = filament::ColorGrading::ToneMapping::FILMIC;
+            tone_mapper_ = new filament::FilmicToneMapper;
             break;
         case ColorGradingParams::ToneMapping::kUchimura:
-            tm = filament::ColorGrading::ToneMapping::UCHIMURA;
             break;
         case ColorGradingParams::ToneMapping::kReinhard:
-            tm = filament::ColorGrading::ToneMapping::REINHARD;
             break;
         case ColorGradingParams::ToneMapping::kDisplayRange:
-            tm = filament::ColorGrading::ToneMapping::DISPLAY_RANGE;
+            tone_mapper_ = new filament::DisplayRangeToneMapper;
             break;
         default:
             break;
@@ -258,7 +271,7 @@ void FilamentView::SetColorGrading(const ColorGradingParams& color_grading) {
     color_grading_ =
             filament::ColorGrading::Builder()
                     .quality(q)
-                    .toneMapping(tm)
+                    .toneMapper(tone_mapper_)
                     .whiteBalance(color_grading.GetTemperature(),
                                   color_grading.GetTint())
                     .channelMixer(
@@ -285,7 +298,9 @@ void FilamentView::SetColorGrading(const ColorGradingParams& color_grading) {
 }
 
 void FilamentView::ConfigureForColorPicking() {
-    view_->setSampleCount(1);
+    auto msaa_options = view_->getMultiSampleAntiAliasingOptions();
+    msaa_options.sampleCount = 1;
+    view_->setMultiSampleAntiAliasingOptions(msaa_options);
     SetPostProcessing(false);
     SetAmbientOcclusion(false, false);
     SetShadowing(false, ShadowType::kPCF);
@@ -381,8 +396,8 @@ void FilamentView::PreRender() {
         selected_material =
                 resource_mgr_.GetMaterialInstance(material_handle).lock();
         if (selected_material) {
-            const auto f = camera_->GetNativeCamera()->getCullingFar();
-            const auto n = camera_->GetNativeCamera()->getNear();
+            const auto f = static_cast<float>(camera_->GetNativeCamera()->getCullingFar());
+            const auto n = static_cast<float>(camera_->GetNativeCamera()->getNear());
 
             FilamentMaterialModifier(selected_material, material_handle)
                     .SetParameter("cameraNear", n)
