@@ -21,7 +21,7 @@ static const std::unordered_map<
         std::string,
         std::function<bool(const std::string &, geometry::Image &)>>
         file_extension_to_image_read_function{
-                {"png", ReadImageFromPNG},
+                // {"png", ReadImageFromPNG},
                 {"jpg", ReadImageFromJPG},
                 {"jpeg", ReadImageFromJPG},
         };
@@ -30,7 +30,7 @@ static const std::unordered_map<
         std::string,
         std::function<bool(const std::string &, const geometry::Image &, int)>>
         file_extension_to_image_write_function{
-                {"png", WriteImageToPNG},
+                // {"png", WriteImageToPNG},
                 {"jpg", WriteImageToJPG},
                 {"jpeg", WriteImageToJPG},
         };
@@ -97,7 +97,8 @@ bool ReadImageFromMemory(const std::string &image_format,
                          size_t image_data_size,
                          geometry::Image &image) {
     if (image_format == "png") {
-        return ReadPNGFromMemory(image_data_ptr, image_data_size, image);
+        utility::LogError("PNG format is not supported for memory reading");
+        // return ReadPNGFromMemory(image_data_ptr, image_data_size, image);
     } else if (image_format == "jpg") {
         return ReadJPGFromMemory(image_data_ptr, image_data_size, image);
     } else {
