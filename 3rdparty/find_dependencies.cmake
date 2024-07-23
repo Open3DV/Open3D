@@ -1229,7 +1229,7 @@ if(BUILD_GUI)
     if(USE_SYSTEM_FILAMENT)
         open3d_find_package_3rdparty_library(3rdparty_filament
             PACKAGE filament
-            TARGETS filament::filaments filament::matc
+            TARGETS filament::filaments  
         )
         if(3rdparty_filament_FOUND)
             get_target_property(FILAMENT_MATC filament::matc IMPORTED_LOCATION_RELEASE)
