@@ -27,7 +27,7 @@ target_sources(io PRIVATE
     file_format/FileOFF.cpp
     file_format/FilePCD.cpp
     file_format/FilePLY.cpp
-    file_format/FilePNG.cpp
+    # file_format/FilePNG.cpp
     file_format/FilePTS.cpp
     file_format/FileSTL.cpp
     file_format/FileTUM.cpp

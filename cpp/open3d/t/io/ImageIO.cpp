@@ -27,7 +27,7 @@ static const std::unordered_map<
         std::string,
         std::function<bool(const std::string &, geometry::Image &)>>
         file_extension_to_image_read_function{
-                {"png", ReadImageFromPNG},
+                // {"png", ReadImageFromPNG},
                 {"jpg", ReadImageFromJPG},
                 {"jpeg", ReadImageFromJPG},
         };
@@ -36,7 +36,7 @@ static const std::unordered_map<
         std::string,
         std::function<bool(const std::string &, const geometry::Image &, int)>>
         file_extension_to_image_write_function{
-                {"png", WriteImageToPNG},
+                // {"png", WriteImageToPNG},
                 {"jpg", WriteImageToJPG},
                 {"jpeg", WriteImageToJPG},
         };

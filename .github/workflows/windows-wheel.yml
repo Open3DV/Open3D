@@ -6,7 +6,7 @@ on:
       developer_build:
         description: "Set to OFF for Release wheels"
         required: false
-        default: "ON"
+        default: "OFF"
 
   push:
     branches:
@@ -42,7 +42,7 @@ jobs:
       fail-fast: false
       # https://github.community/t/how-to-conditionally-include-exclude-items-in-matrix-eg-based-on-branch/16853/6
       matrix:
-        python_version: ['3.7', '3.8', '3.9', '3.10']
+        python_version: ['3.8', '3.9', '3.10', '3.11']
 
     steps:
       - name: Checkout source code
