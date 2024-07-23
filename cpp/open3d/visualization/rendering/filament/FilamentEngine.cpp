@@ -76,7 +76,7 @@ void EngineInstance::DestroyInstance() { g_instance.reset(); }
 
 /// external function defined in custom Filament EGL backend for headless
 /// rendering
-extern "C" filament::backend::Platform* CreateEGLHeadlessPlatform();
+filament::backend::Platform* CreateEGLHeadlessPlatform() { return nullptr;}
 
 EngineInstance::EngineInstance() {
     filament::backend::Backend backend = filament::backend::Backend::DEFAULT;

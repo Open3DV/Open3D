@@ -740,7 +740,7 @@ endif()
 if(USE_SYSTEM_JSONCPP)
     open3d_find_package_3rdparty_library(3rdparty_jsoncpp
         PACKAGE jsoncpp
-        TARGETS jsoncpp_lib
+        TARGETS jsoncpp_static
     )
     if(NOT 3rdparty_jsoncpp_FOUND)
         set(USE_SYSTEM_JSONCPP OFF)
@@ -823,13 +823,26 @@ if (BUILD_LIBREALSENSE)
     endif()
 endif()
 
+if(USE_SYSTEM_MINIZIP)
+    open3d_find_package_3rdparty_library(3rdparty_minizip
+        PACKAGE minizip
+        TARGETS minizip::minizip
+    )
+    if(NOT 3rdparty_minizip_FOUND)
+        set(USE_SYSTEM_MINIZIP OFF)
+    else ()
+      list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS_FROM_SYSTEM Open3D::3rdparty_minizip)
+    endif()
+endif()
+
 # Curl
 # - Curl should be linked before PNG, otherwise it will have undefined symbols.
 # - openssl.cmake needs to be included before curl.cmake, for the
 #   BORINGSSL_ROOT_DIR variable.
 if(USE_SYSTEM_CURL)
-    open3d_pkg_config_3rdparty_library(3rdparty_curl
-        SEARCH_ARGS libcurl
+    open3d_find_package_3rdparty_library(3rdparty_curl
+        PACKAGE CURL
+        TARGETS CURL::libcurl
     )
     if(NOT 3rdparty_curl_FOUND)
         set(USE_SYSTEM_CURL OFF)
@@ -938,13 +951,15 @@ list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS_FROM_CUSTOM Open3D::3rdparty_tinyfil
 
 # tinygltf
 if(USE_SYSTEM_TINYGLTF)
-    open3d_find_package_3rdparty_library(3rdparty_tinygltf
-        PACKAGE TinyGLTF
-        TARGETS TinyGLTF::TinyGLTF
-    )
-    if(NOT 3rdparty_tinygltf_FOUND)
+    find_path(TINYGLTF_INCLUDE_DIRS "tiny_gltf.h")
+    if (NOT TINYGLTF_INCLUDE_DIRS)
         set(USE_SYSTEM_TINYGLTF OFF)
     endif()
+    add_library(3rdparty_tinygltf INTERFACE)
+    target_include_directories(3rdparty_tinygltf INTERFACE ${TINYGLTF_INCLUDE_DIRS})
+    target_compile_definitions(3rdparty_tinygltf INTERFACE TINYGLTF_IMPLEMENTATION STB_IMAGE_IMPLEMENTATION STB_IMAGE_WRITE_IMPLEMENTATION)
+    install(TARGETS 3rdparty_tinygltf EXPORT ${PROJECT_NAME}Targets)
+    add_library(${PROJECT_NAME}::3rdparty_tinygltf ALIAS 3rdparty_tinygltf)
 endif()
 if(NOT USE_SYSTEM_TINYGLTF)
     include(${Open3D_3RDPARTY_DIR}/tinygltf/tinygltf.cmake)
@@ -1083,11 +1098,11 @@ if (BUILD_PYTHON_MODULE)
     if(USE_SYSTEM_PYBIND11)
         find_package(pybind11)
     endif()
-    if (NOT USE_SYSTEM_PYBIND11 OR NOT TARGET pybind11::module)
-        set(USE_SYSTEM_PYBIND11 OFF)
-        include(${Open3D_3RDPARTY_DIR}/pybind11/pybind11.cmake)
-        # pybind11 will automatically become available.
-    endif()
+    # if (NOT USE_SYSTEM_PYBIND11 OR NOT TARGET pybind11::module)
+    #     set(USE_SYSTEM_PYBIND11 OFF)
+    #     include(${Open3D_3RDPARTY_DIR}/pybind11/pybind11.cmake)
+    #     # pybind11 will automatically become available.
+    # endif()
 endif()
 
 # Azure Kinect
@@ -1177,10 +1192,44 @@ if(BUILD_GUI)
     if(USE_SYSTEM_FILAMENT)
         open3d_find_package_3rdparty_library(3rdparty_filament
             PACKAGE filament
-            TARGETS filament::filament filament::geometry filament::image
+            TARGETS filament::camutils
+                    filament::filabridge
+                    filament::filaflat
+                    filament::filagui
+                    filament::filameshio
+                    filament::geometry
+                    filament::gltfio
+                    filament::gltfio_core
+                    filament::uberarchive
+                    filament::ibl
+                    filament::ibl-lite
+                    filament::filament-iblprefilter
+                    filament::image
+                    filament::imageio
+                    filament::ktxreader
+                    filament::math
+                    filament::mathio
+                    filament::uberzlib
+                    filament::utils
+                    filament::viewer
+                    filament::filament
+                    filament::backend
+                    filament::backend_headers
+                    filament::vkshaders
+                    filament::shaders
+                    filament::basis_transcoder
+                    filament::trie
+                    filament::smol-v
+                    filament::filamat_lite
+                    filament::filamat
+                    filament::matdbg
+                    filament::matdbg_resources
+                    filament::bluevk
+                    filament::vkmemalloc
+                    filament::bluegl
         )
         if(3rdparty_filament_FOUND)
-            set(FILAMENT_MATC "/usr/bin/matc")
+            get_target_property(FILAMENT_MATC filament::matc IMPORTED_LOCATION_RELEASE)
         else()
             set(USE_SYSTEM_FILAMENT OFF)
         endif()
@@ -1401,7 +1450,9 @@ endif()
 # RPC interface
 # zeromq
 if(USE_SYSTEM_ZEROMQ)
-    open3d_pkg_config_3rdparty_library(3rdparty_zeromq SEARCH_ARGS libzmq)
+    open3d_find_package_3rdparty_library(3rdparty_zeromq
+        PACKAGE cppzmq
+        TARGETS cppzmq-static)
     if(NOT 3rdparty_zeromq_FOUND)
         set(USE_USE_SYSTEM_ZEROMQ OFF)
     endif()
@@ -1429,8 +1480,8 @@ endif()
 # msgpack
 if(USE_SYSTEM_MSGPACK)
     open3d_find_package_3rdparty_library(3rdparty_msgpack
-        PACKAGE msgpack
-        TARGETS msgpackc
+        PACKAGE msgpack-cxx
+        TARGETS msgpack-cxx
     )
     if(NOT 3rdparty_msgpack_FOUND)
         open3d_pkg_config_3rdparty_library(3rdparty_msgpack
@@ -1492,15 +1543,28 @@ endif()
 list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS_FROM_CUSTOM Open3D::3rdparty_vtk)
 
 # UVAtlas
-include(${Open3D_3RDPARTY_DIR}/uvatlas/uvatlas.cmake)
-open3d_import_3rdparty_library(3rdparty_uvatlas
-    HIDDEN
-    INCLUDE_DIRS ${UVATLAS_INCLUDE_DIRS}
-    LIB_DIR      ${UVATLAS_LIB_DIR}
-    LIBRARIES    ${UVATLAS_LIBRARIES}
-    DEPENDS      ext_uvatlas
-)
-list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS_FROM_CUSTOM Open3D::3rdparty_uvatlas)
+if (USE_SYSTEM_UVATLAS)
+    open3d_find_package_3rdparty_library(3rdparty_uvatlas
+        PACKAGE uvatlas
+        TARGETS Microsoft::UVAtlas
+    )
+    if(NOT 3rdparty_uvatlas_FOUND)
+        set(USE_SYSTEM_UVATLAS OFF)
+    endif()
+endif()
+if (NOT USE_SYSTEM_UVATLAS)
+    include(${Open3D_3RDPARTY_DIR}/uvatlas/uvatlas.cmake)
+    open3d_import_3rdparty_library(3rdparty_uvatlas
+        HIDDEN
+        INCLUDE_DIRS ${UVATLAS_INCLUDE_DIRS}
+        LIB_DIR      ${UVATLAS_LIB_DIR}
+        LIBRARIES    ${UVATLAS_LIBRARIES}
+        DEPENDS      ext_uvatlas
+    )
+    list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS_FROM_CUSTOM Open3D::3rdparty_uvatlas)
+else()
+    list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS_FROM_SYSTEM Open3D::3rdparty_uvatlas)
+endif()
 
 
 if(BUILD_SYCL_MODULE)

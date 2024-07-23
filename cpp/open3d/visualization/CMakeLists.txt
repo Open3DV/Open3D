@@ -99,6 +99,11 @@ if (BUILD_GUI)
 endif()
 
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set_target_properties(visualization PROPERTIES COMPILE_OPTIONS "-Wno-error")
+endif()
+
+
 include(Open3DAddEncodedShader)
 
 open3d_add_encoded_shader(shader

@@ -12,7 +12,7 @@
 
 #include <errno.h>
 #include <stdio.h>
-#include <unzip.h>
+#include <minizip/unzip.h>
 
 #include <iostream>
 #include <string>

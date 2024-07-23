@@ -16,13 +16,11 @@ function(open3d_make_ispc_instruction_sets ispc_isas)
         #   sse4-i32x4, sse4-i32x8, avx1-i32x4, avx1-i32x8,
         #   avx1-i32x16, avx1-i64x4, avx2-i8x32, avx2-i16x16,
         #   avx2-i32x4, avx2-i32x8, avx2-i32x16, avx2-i64x4,
-        #   avx512knl-i32x16, avx512skx-i32x8, avx512skx-i32x16,
-        #   avx512skx-i8x64, avx512skx-i16x32, neon-i8x16,
-        #   neon-i16x8, neon-i32x4, neon-i32x8, genx-x8, genx-x16
+        #   neon-i8x16, neon-i16x8, neon-i32x4, neon-i32x8, genx-x8, genx-x16
         if(LINUX_AARCH64)
             set(${ispc_isas} neon-i32x4)
         else()
-            set(${ispc_isas} sse2-i32x4 sse4-i32x4 avx1-i32x8 avx2-i32x8 avx512knl-i32x16 avx512skx-i32x16)
+            set(${ispc_isas} sse2-i32x4 sse4-i32x4 avx1-i32x8 avx2-i32x8)
         endif()
     else()
         if(CMAKE_ISPC_INSTRUCTION_SETS)
@@ -34,7 +32,7 @@ function(open3d_make_ispc_instruction_sets ispc_isas)
                 set(${ispc_isas} neon-i32x4)
             else()
                 # Only consider x86 ISAs
-                set(ISPC_CANDIDATE_ISAS sse2-i32x4 sse4-i32x4 avx1-i32x8 avx2-i32x8 avx512knl-i32x16 avx512skx-i32x16)
+                set(ISPC_CANDIDATE_ISAS sse2-i32x4 sse4-i32x4 avx1-i32x8 avx2-i32x8)
 
                 # Simulate try_run() on this small project with 2 source files
                 execute_process(

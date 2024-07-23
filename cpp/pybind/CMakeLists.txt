@@ -41,7 +41,7 @@ target_include_directories(pybind SYSTEM PRIVATE
 
 open3d_show_and_abort_on_warning(pybind)
 open3d_set_global_properties(pybind)
-target_link_libraries(pybind PRIVATE Open3D::Open3D)
+target_link_libraries(pybind PRIVATE Open3D::Open3D pybind11::pybind11)
 
 
 if (WIN32)
@@ -84,7 +84,6 @@ set_target_properties(pybind PROPERTIES
 set(PYTHON_EXTRA_LIBRARIES "")
 set(PYTHON_EXTRA_LIBRARIES_GL "")
 if (BUILD_GUI AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    list(APPEND PYTHON_EXTRA_LIBRARIES ${CPP_LIBRARY}.1 ${CPPABI_LIBRARY})
     list(APPEND PYTHON_EXTRA_LIBRARIES_GL ${MESA_CPU_GL_LIBRARY})
 endif()
 if (WITH_OPENMP AND APPLE AND NOT BUILD_SHARED_LIBS)
@@ -240,6 +239,8 @@ add_custom_target(pip-package
     WORKING_DIRECTORY ${PYTHON_PACKAGE_DST_DIR}
     DEPENDS python-package
 )
+install(DIRECTORY "${PYTHON_PACKAGE_DST_DIR}/pip_package/"
+  DESTINATION "pip_package" FILES_MATCHING PATTERN "*.whl")
 
 # Use `make install-pip-package` to install pip wheel package to the current
 # python environment.
