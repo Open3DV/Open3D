@@ -1229,41 +1229,7 @@ if(BUILD_GUI)
     if(USE_SYSTEM_FILAMENT)
         open3d_find_package_3rdparty_library(3rdparty_filament
             PACKAGE filament
-            TARGETS filament::camutils
-                    filament::filabridge
-                    filament::filaflat
-                    filament::filagui
-                    filament::filameshio
-                    filament::geometry
-                    filament::gltfio
-                    filament::gltfio_core
-                    filament::uberarchive
-                    filament::ibl
-                    filament::ibl-lite
-                    filament::filament-iblprefilter
-                    filament::image
-                    filament::imageio
-                    filament::ktxreader
-                    filament::math
-                    filament::mathio
-                    filament::uberzlib
-                    filament::utils
-                    filament::viewer
-                    filament::filament
-                    filament::backend
-                    filament::backend_headers
-                    filament::vkshaders
-                    filament::shaders
-                    filament::basis_transcoder
-                    filament::trie
-                    filament::smol-v
-                    filament::filamat_lite
-                    filament::filamat
-                    filament::matdbg
-                    filament::matdbg_resources
-                    filament::bluevk
-                    filament::vkmemalloc
-                    filament::bluegl
+            TARGETS filament::filaments filament::matc
         )
         if(3rdparty_filament_FOUND)
             get_target_property(FILAMENT_MATC filament::matc IMPORTED_LOCATION_RELEASE)
