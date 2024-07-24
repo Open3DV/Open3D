@@ -51,9 +51,10 @@ filament::math::mat4f CameraToFilamentTransformF(const Camera::Transform& t) {
 
 }  // namespace
 
-FilamentCamera::FilamentCamera(filament::Engine& engine) : engine_(engine) {
+FilamentCamera::FilamentCamera(filament::Engine& engine,filament::Scene* scene) : engine_(engine),scene_(scene) 
+{
     camera_entity_ = utils::EntityManager::get().create();
-    camera_ = engine_.createCamera(camera_entity_);
+    camera_ = engine_.createCamera(scene_,camera_entity_);
     projection_.is_ortho = false;
     projection_.is_intrinsic = false;
 }

@@ -24,7 +24,7 @@ namespace rendering {
 
 class FilamentCamera : public Camera {
 public:
-    explicit FilamentCamera(filament::Engine& engine);
+    explicit FilamentCamera(filament::Engine& engine,filament::Scene* scene);
     ~FilamentCamera();
 
     void SetProjection(double fov,
@@ -91,6 +91,7 @@ private:
     utils::Entity camera_entity_;
     filament::Engine& engine_;
     Camera::ProjectionInfo projection_;
+    filament::Scene* scene_ = nullptr;
 };
 
 }  // namespace rendering

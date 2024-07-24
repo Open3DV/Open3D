@@ -57,6 +57,15 @@ const filament::LinearColorA kNormalsClearColor = {0.5f, 0.5f, 0.5f, 1.f};
 FilamentView::FilamentView(filament::Engine& engine,
                            FilamentResourceManager& resource_mgr)
     : engine_(engine), resource_mgr_(resource_mgr) {
+    
+}
+
+FilamentView::FilamentView(filament::Engine& engine,
+                           FilamentScene& scene,
+                           FilamentResourceManager& resource_mgr)
+    :engine_(engine), resource_mgr_(resource_mgr) 
+{
+    scene_ = &scene;
     view_ = engine_.createView();
     auto msaa_options = view_->getMultiSampleAntiAliasingOptions();
     msaa_options.sampleCount = 4;
@@ -70,20 +79,13 @@ FilamentView::FilamentView(filament::Engine& engine,
                           ColorGradingParams::ToneMapping::kUchimura);
     SetColorGrading(cp);
 
-    camera_ = std::make_unique<FilamentCamera>(engine_);
+    camera_ = std::make_unique<FilamentCamera>(engine_,scene_);
     view_->setCamera(camera_->GetNativeCamera());
 
     camera_->SetProjection(90, 4.f / 3.f, 0.01, 1000,
                            Camera::FovType::Horizontal);
 
     discard_buffers_ = View::TargetBuffers::All;
-}
-
-FilamentView::FilamentView(filament::Engine& engine,
-                           FilamentScene& scene,
-                           FilamentResourceManager& resource_mgr)
-    : FilamentView(engine, resource_mgr) {
-    scene_ = &scene;
 
     view_->setScene(scene_->GetNativeScene());
 }

@@ -36,9 +36,7 @@ public:
     static constexpr std::uint8_t kAllLayersMask =
             std::numeric_limits<std::uint8_t>::max();
     static constexpr std::uint8_t kMainLayer = 1;  // Default layer for objects
-
-    FilamentView(filament::Engine& engine,
-                 FilamentResourceManager& resource_mgr);
+ 
     FilamentView(filament::Engine& engine,
                  FilamentScene& scene,
                  FilamentResourceManager& resource_mgr);
