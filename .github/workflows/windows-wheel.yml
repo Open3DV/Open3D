@@ -31,7 +31,7 @@ env:
   SRC_DIR: "D:\\a\\open3d\\open3d"
   BUILD_DIR: "C:\\Open3D\\build"
   NPROC: 2
-  DEVELOPER_BUILD: ${{ github.event.inputs.developer_build || 'ON' }}
+  DEVELOPER_BUILD: ${{ github.event.inputs.developer_build || 'OFF' }}
   GCE_CLI_GHA_VERSION: '416.0.0'      # Fixed to avoid dependency on API changes
 
 jobs:
