@@ -83,6 +83,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX="C:\Program Files\Open3D" `
             -DDEVELOPER_BUILD="${env:DEVELOPER_BUILD}" `
             -DCMAKE_SYSTEM_VERSION="10.0.19041.0" `
+            -DCMAKE_CONFIGURATION_TYPES=Debug `
             -DBUILD_SHARED_LIBS=ON `
             -DSTATIC_WINDOWS_RUNTIME=OFF `
             -DBUILD_COMMON_ISPC_ISAS=ON `
