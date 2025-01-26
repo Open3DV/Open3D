@@ -31,7 +31,7 @@ env:
   SRC_DIR: "D:\\a\\open3d\\open3d"
   BUILD_DIR: "C:\\Open3D\\build"
   NPROC: 2
-  DEVELOPER_BUILD: ${{ github.event.inputs.developer_build || 'ON' }}
+  DEVELOPER_BUILD: ${{ github.event.inputs.developer_build || 'OFF' }}
   GCE_CLI_GHA_VERSION: '416.0.0'      # Fixed to avoid dependency on API changes
 
 jobs:
@@ -83,6 +83,8 @@ jobs:
             -DCMAKE_INSTALL_PREFIX="C:\Program Files\Open3D" `
             -DDEVELOPER_BUILD="${env:DEVELOPER_BUILD}" `
             -DCMAKE_SYSTEM_VERSION="10.0.19041.0" `
+            -DCMAKE_CONFIGURATION_TYPES=Debug `
+            -DCMAKE_CXX_FLAGS="/bigobj /EHsc" `
             -DBUILD_SHARED_LIBS=ON `
             -DSTATIC_WINDOWS_RUNTIME=OFF `
             -DBUILD_COMMON_ISPC_ISAS=ON `
@@ -103,7 +105,7 @@ jobs:
                                           wheel==${{ env.WHEEL_VER }} `
                                           setuptools==${{ env.STOOLS_VER }}
           cmake --build . --parallel ${{ env.NPROC }} --config Debug --target pip-package
-          $PIP_PKG_NAME=(Get-ChildItem lib/python_package/pip_package/open3d*.whl).Name
+          $PIP_PKG_NAME=(Get-ChildItem -Path ${{ env.BUILD_DIR }} -Recurse -Filter "open3d*.whl").Name
           echo "PIP_PKG_NAME=$PIP_PKG_NAME"  | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Upload wheel
