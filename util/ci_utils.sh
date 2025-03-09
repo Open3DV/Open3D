@@ -120,7 +120,7 @@ build_all() {
         -DENABLE_CACHED_CUDA_MANAGER=OFF
         -DBUILD_COMMON_ISPC_ISAS=ON
         # TODO: PyTorch still use old CXX ABI, remove this line when PyTorch is updated
-        -DGLIBCXX_USE_CXX11_ABI=OFF
+        -DGLIBCXX_USE_CXX11_ABI=ON
         -DBUILD_TENSORFLOW_OPS="$BUILD_TENSORFLOW_OPS"
         -DBUILD_PYTORCH_OPS="$BUILD_PYTORCH_OPS"
         -DCMAKE_INSTALL_PREFIX="$OPEN3D_INSTALL_DIR"
@@ -399,7 +399,7 @@ build_docs() {
         "-DWITH_OPENMP=ON"
         "-DBUILD_AZURE_KINECT=ON"
         "-DBUILD_LIBREALSENSE=ON"
-        "-DGLIBCXX_USE_CXX11_ABI=OFF"
+        "-DGLIBCXX_USE_CXX11_ABI=ON"
         # TODO: PyTorch still use old CXX ABI, re-enable Tensorflow when PyTorch is updated to use new ABI
         "-DBUILD_TENSORFLOW_OPS=OFF"
         "-DBUILD_PYTORCH_OPS=ON"

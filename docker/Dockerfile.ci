@@ -175,7 +175,7 @@ RUN \
         export CMAKE_CXX_COMPILER=g++; \
         export CMAKE_C_COMPILER=gcc; \
         # TODO: PyTorch still use old CXX ABI, remove this line when PyTorch is updated
-        export GLIBCXX_USE_CXX11_ABI=OFF; \
+        export GLIBCXX_USE_CXX11_ABI=ON; \
     fi \
  && mkdir build \
  && cd build \
