@@ -35,8 +35,6 @@ jobs:
         run: |
           source util/ci_utils.sh
           maximize_ubuntu_github_actions_build_space
-      - name: Clean old wheels
-        run: rm -f ${GITHUB_WORKSPACE}/open3d*.whl
       - name: Docker build
         run: |
           if [ "${{ env.PYTHON_VERSION }}" = "3.11" ] && [ "${{ env.DEVELOPER_BUILD }}" = "ON"  ]; then
