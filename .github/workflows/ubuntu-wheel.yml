@@ -9,6 +9,12 @@ on:
         required: false
         default: 'OFF'
 
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, reopened, synchronize] # Rebuild on new pushes to PR
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
