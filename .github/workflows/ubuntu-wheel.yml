@@ -28,7 +28,7 @@ jobs:
       matrix:
         python_version: ['3.8', '3.9', '3.10', '3.11']
     env:
-      DEVELOPER_BUILD: ${{ github.event.inputs.developer_build || 'ON' }}
+      DEVELOPER_BUILD: ${{ github.event.inputs.developer_build || 'OFF' }}
       PYTHON_VERSION: ${{ matrix.python_version }}
       CCACHE_TAR_NAME: open3d-ubuntu-1804-cuda-ci-ccache
     steps:
