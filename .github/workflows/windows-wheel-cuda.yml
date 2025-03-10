@@ -71,6 +71,12 @@ jobs:
           python -m pip install -r python/requirements.txt
           python -m pip install -r python/requirements_jupyter_build.txt
 
+      - name: Clean old wheels
+        run: |
+          # 清理构建目录和源码目录的残留文件
+          Remove-Item -Path "${{ env.BUILD_DIR }}\*.whl" -Force -ErrorAction Ignore
+          Remove-Item -Path "${{ env.SRC_DIR }}\*.whl" -Force -ErrorAction Ignore
+
       - name: Config
         run: |
           $ErrorActionPreference = 'Stop'

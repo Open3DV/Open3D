@@ -87,6 +87,12 @@ jobs:
             -DBUILD_EXAMPLES=OFF `
             ${{ env.SRC_DIR }}
 
+      - name: Clean old wheels
+        run: |
+          # 清理构建目录和源码目录的残留文件
+          Remove-Item -Path "${{ env.BUILD_DIR }}\*.whl" -Force -ErrorAction Ignore
+          Remove-Item -Path "${{ env.SRC_DIR }}\*.whl" -Force -ErrorAction Ignore
+
       - name: Build Python package
         working-directory: ${{ env.BUILD_DIR }}
         run: |
