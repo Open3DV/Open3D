@@ -25,7 +25,7 @@ if [ -z "${BUILD_CUDA_MODULE:+x}" ]; then
     fi
 fi
 BUILD_TENSORFLOW_OPS=${BUILD_TENSORFLOW_OPS:-OFF}
-BUILD_PYTORCH_OPS=${BUILD_PYTORCH_OPS:-ON}
+BUILD_PYTORCH_OPS=${BUILD_PYTORCH_OPS:-OFF}
 LOW_MEM_USAGE=${LOW_MEM_USAGE:-OFF}
 
 # Dependency versions:
@@ -151,15 +151,17 @@ build_pip_package() {
     BUILD_FILAMENT_FROM_SOURCE=OFF
     BUILD_COMMON_CUDA_ARCHS=OFF
     set +u
-    if [ -f "${OPEN3D_ML_ROOT}/set_open3d_ml_root.sh" ]; then
-        echo "Open3D-ML available at ${OPEN3D_ML_ROOT}. Bundling Open3D-ML in wheel."
-        # the build system of the main repo expects a main branch. make sure main exists
-        git -C "${OPEN3D_ML_ROOT}" checkout -b main || true
-        BUNDLE_OPEN3D_ML=ON
-    else
-        echo "Open3D-ML not available."
-        BUNDLE_OPEN3D_ML=OFF
-    fi
+    BUNDLE_OPEN3D_ML=OFF
+    BUILD_PYTORCH_OPS=OFF
+    # if [ -f "${OPEN3D_ML_ROOT}/set_open3d_ml_root.sh" ]; then
+    #     echo "Open3D-ML available at ${OPEN3D_ML_ROOT}. Bundling Open3D-ML in wheel."
+    #     # the build system of the main repo expects a main branch. make sure main exists
+    #     git -C "${OPEN3D_ML_ROOT}" checkout -b main || true
+    #     BUNDLE_OPEN3D_ML=ON
+    # else
+    #     echo "Open3D-ML not available."
+    #     BUNDLE_OPEN3D_ML=OFF
+    # fi
     if [[ "$DEVELOPER_BUILD" == "OFF" ]]; then
         echo "Building for a new Open3D release"
     fi
@@ -188,11 +190,11 @@ build_pip_package() {
         BUILD_JUPYTER_EXTENSION=OFF
     fi
     CXX11_ABI=ON
-    if [ "$BUILD_TENSORFLOW_OPS" == "ON" ]; then
-        CXX11_ABI=$(python -c "import tensorflow as tf; print('ON' if tf.__cxx11_abi_flag__ else 'OFF')")
-    elif [ "$BUILD_PYTORCH_OPS" == "ON" ]; then
-        CXX11_ABI=$(python -c "import torch; print('ON' if torch._C._GLIBCXX_USE_CXX11_ABI else 'OFF')")
-    fi
+    # if [ "$BUILD_TENSORFLOW_OPS" == "ON" ]; then
+    #     CXX11_ABI=$(python -c "import tensorflow as tf; print('ON' if tf.__cxx11_abi_flag__ else 'OFF')")
+    # elif [ "$BUILD_PYTORCH_OPS" == "ON" ]; then
+    #     CXX11_ABI=$(python -c "import torch; print('ON' if torch._C._GLIBCXX_USE_CXX11_ABI else 'OFF')")
+    # fi
     echo Building with GLIBCXX_USE_CXX11_ABI="$CXX11_ABI"
     set -u
 
@@ -403,7 +405,7 @@ build_docs() {
         "-DGLIBCXX_USE_CXX11_ABI=ON"
         # TODO: PyTorch still use old CXX ABI, re-enable Tensorflow when PyTorch is updated to use new ABI
         "-DBUILD_TENSORFLOW_OPS=OFF"
-        "-DBUILD_PYTORCH_OPS=ON"
+        "-DBUILD_PYTORCH_OPS=OFF"
         "-DBUILD_EXAMPLES=OFF"
     )
     set -x # Echo commands on
@@ -430,7 +432,7 @@ build_docs() {
     set -x # Echo commands on
     cmake "${cmakeOptions[@]}" \
         -DENABLE_HEADLESS_RENDERING=OFF \
-        -DBUNDLE_OPEN3D_ML=ON \
+        -DBUNDLE_OPEN3D_ML=OFF \
         -DBUILD_GUI=ON \
         -DBUILD_WEBRTC=ON \
         -DBUILD_JUPYTER_EXTENSION=OFF \

@@ -231,6 +231,7 @@ ci_build() {
     echo "[ci_build()] CCACHE_VERSION=${CCACHE_VERSION}"
     echo "[ci_build()] PYTHON_VERSION=${PYTHON_VERSION}"
     echo "[ci_build()] BUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}"
+    echo "[ci_build()] GLIBCXX_USE_CXX11_ABI=${GLIBCXX_USE_CXX11_ABI}"
     echo "[ci_build()] BUILD_CUDA_MODULE=${BUILD_CUDA_MODULE}"
     echo "[ci_build()] BUILD_TENSORFLOW_OPS=${BUILD_TENSORFLOW_OPS}"
     echo "[ci_build()] BUILD_PYTORCH_OPS=${BUILD_PYTORCH_OPS}"
@@ -248,6 +249,7 @@ ci_build() {
         --build-arg PYTHON_VERSION="${PYTHON_VERSION}" \
         --build-arg BUILD_SHARED_LIBS="${BUILD_SHARED_LIBS}" \
         --build-arg BUILD_CUDA_MODULE="${BUILD_CUDA_MODULE}" \
+        --build-arg GLIBCXX_USE_CXX11_ABI=${GLIBCXX_USE_CXX11_ABI} \
         --build-arg BUILD_TENSORFLOW_OPS="${BUILD_TENSORFLOW_OPS}" \
         --build-arg BUILD_PYTORCH_OPS="${BUILD_PYTORCH_OPS}" \
         --build-arg PACKAGE="${PACKAGE}" \
