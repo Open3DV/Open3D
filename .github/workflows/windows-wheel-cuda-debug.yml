@@ -111,6 +111,7 @@ jobs:
       - name: Upload wheel
         uses: actions/upload-artifact@v4
         with:
-          name: open3d_win_amd64_wheels
+          name: open3d_win_amd64_wheels_${{ env.PYTHON_VERSION }}
           path: ${{ env.BUILD_DIR }}/lib/python_package/pip_package/${{ env.PIP_PKG_NAME }}
           if-no-files-found: error
+          overwrite: true
