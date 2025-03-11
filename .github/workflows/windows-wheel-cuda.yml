@@ -43,7 +43,8 @@ jobs:
       # https://github.community/t/how-to-conditionally-include-exclude-items-in-matrix-eg-based-on-branch/16853/6
       matrix:
         python_version: ['3.8', '3.9', '3.10', '3.11']
-
+    env:
+      PYTHON_VERSION: ${{ matrix.python_version }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
