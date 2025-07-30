@@ -9,6 +9,12 @@ on:
         required: false
         default: 'OFF'
 
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, reopened, synchronize] # Rebuild on new pushes to PR
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -25,7 +31,7 @@ jobs:
       matrix:
         python_version: ['3.8', '3.9', '3.10', '3.11']
     env:
-      DEVELOPER_BUILD: ${{ github.event.inputs.developer_build || 'ON' }}
+      DEVELOPER_BUILD: ${{ github.event.inputs.developer_build || 'OFF' }}
       PYTHON_VERSION: ${{ matrix.python_version }}
       CCACHE_TAR_NAME: open3d-ubuntu-1804-cuda-ci-ccache
     steps:
@@ -57,8 +63,9 @@ jobs:
           PIP_PKG_NAME="$(basename ${GITHUB_WORKSPACE}/open3d*.whl)"
           echo "PIP_PKG_NAME=$PIP_PKG_NAME" >> $GITHUB_ENV
       - name: Upload wheel to GitHub artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: open3d_linux_x86_64_wheels
+          name: open3d_cuda_linux_x86_64_wheels_${{ env.PYTHON_VERSION }}
           path: ${{ env.PIP_PKG_NAME }}
           if-no-files-found: error
+          overwrite: true
