@@ -1,5 +1,6 @@
 # This workflow builds Open3D wheels for Ubuntu 18.04 
 name: Ubuntu Wheel
+permissions: {}
 
 on:
   workflow_dispatch:
@@ -27,6 +28,8 @@ env:
 
 jobs:
   build-wheel:
+    permissions:
+      contents: write  # Release upload
     name: Build wheel
     runs-on: ubuntu-latest
     strategy:
@@ -39,7 +42,7 @@ jobs:
       CCACHE_TAR_NAME: open3d-ubuntu-1804-cuda-ci-ccache
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Maximize build space
         run: |
           source util/ci_utils.sh
