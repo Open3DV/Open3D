@@ -82,7 +82,7 @@ jobs:
             -DSTATIC_WINDOWS_RUNTIME=OFF `
             -DBUILD_COMMON_ISPC_ISAS=ON `
             -DBUILD_AZURE_KINECT=ON `
-            -DBUILD_LIBREALSENSE=ON `
+            -DBUILD_LIBREALSENSE=OFF `
             -DBUILD_WEBRTC=OFF `
             -DBUILD_JUPYTER_EXTENSION=OFF `
             -DBUILD_EXAMPLES=OFF `
