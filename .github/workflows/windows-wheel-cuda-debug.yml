@@ -72,11 +72,15 @@ jobs:
           python -m pip install -r python/requirements.txt
           python -m pip install -r python/requirements_jupyter_build.txt
 
+      - name: Create build directories
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -Path "C:\Open3D\build\lib\python_package\open3d\lib" -ItemType Directory -Force
+
       - name: Config
         run: |
           $ErrorActionPreference = 'Stop'
-          New-Item -Path ${{ env.BUILD_DIR }} -ItemType Directory
-          New-Item -Path "${{ env.BUILD_DIR }}\lib\python_package\open3d\lib" -ItemType Directory -Force
+          New-Item -Path ${{ env.BUILD_DIR }} -ItemType Directory -Force
           cd ${{ env.BUILD_DIR }}
           if (${env:DEVELOPER_BUILD} -ne "OFF") {
             ${env:DEVELOPER_BUILD}="ON"
