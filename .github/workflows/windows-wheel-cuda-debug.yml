@@ -101,6 +101,11 @@ jobs:
             -DBUILD_EXAMPLES=OFF `
             ${{ env.SRC_DIR }}
 
+      - name: Create Python package directories
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -Path "${{ env.BUILD_DIR }}\lib\python_package\open3d\lib" -ItemType Directory -Force
+
       - name: Build Python package
         working-directory: ${{ env.BUILD_DIR }}
         run: |
