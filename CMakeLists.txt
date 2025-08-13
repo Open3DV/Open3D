@@ -436,6 +436,8 @@ if(BUILD_CUDA_MODULE)
                 set(CMAKE_CUDA_ARCHITECTURES 70-real 75-real 80-real 86)            # Volta, Turing, Ampere
             elseif(CUDAToolkit_VERSION VERSION_GREATER_EQUAL "11.0")
                 set(CMAKE_CUDA_ARCHITECTURES 60-real 70-real 72-real 75-real 80)    # Pascal, Volta, Turing, Ampere
+            elseif(CUDAToolkit_VERSION VERSION_GREATER_EQUAL "12.8")
+                set(CMAKE_CUDA_ARCHITECTURES 75-real 80-real 86-real 89-real 90 120-real)    # Kepler, Maxwell, Pascal, Turing, Ampere, Ada Lovelace, Hopper
             else()
                 set(CMAKE_CUDA_ARCHITECTURES 30-real 50-real 60-real 70-real 75)    # Kepler, Maxwell, Pascal, Turing
             endif()
