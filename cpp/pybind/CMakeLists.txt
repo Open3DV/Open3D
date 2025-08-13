@@ -90,24 +90,24 @@ set_target_properties(pybind PROPERTIES
                       LIBRARY_OUTPUT_DIRECTORY "${PYTHON_COMPILED_MODULE_DIR}"
                       ARCHIVE_OUTPUT_DIRECTORY "${PYTHON_COMPILED_MODULE_DIR}")
 
-if (BUILD_SHARED_LIBS)
-    if (WIN32)    # CMake does not add soversion suffix to WIN32 DLLs
-        set(_libopen3d_soname "Open3D.dll")
-    elseif(APPLE)
-        set(_libopen3d_soname "libOpen3D.${OPEN3D_ABI_VERSION}.dylib")
-    else()
-        set(_libopen3d_soname "libOpen3D.so.${OPEN3D_ABI_VERSION}")
-    endif()
-    add_custom_command(TARGET pybind POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            $<TARGET_FILE:Open3D> $<TARGET_FILE_DIR:pybind>/${_libopen3d_soname}
-    )
-endif()
+# if (BUILD_SHARED_LIBS)
+#     if (WIN32)    # CMake does not add soversion suffix to WIN32 DLLs
+#         set(_libopen3d_soname "Open3D.dll")
+#     elseif(APPLE)
+#         set(_libopen3d_soname "libOpen3D.${OPEN3D_ABI_VERSION}.dylib")
+#     else()
+#         set(_libopen3d_soname "libOpen3D.so.${OPEN3D_ABI_VERSION}")
+#     endif()
+#     add_custom_command(TARGET pybind POST_BUILD
+#         COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#             $<TARGET_FILE:Open3D> $<TARGET_FILE_DIR:pybind>/${_libopen3d_soname}
+#     )
+# endif()
 # Include additional libraries that may be absent from the user system
 # eg: libc++.so, libc++abi.so (needed by filament) for Linux.
 # libc++.so is a linker script including libc++.so.1 and libc++abi.so, so append 1 to libc++.so
-set(PYTHON_EXTRA_LIBRARIES $<TARGET_FILE:TBB::tbb>)
-set(PYTHON_EXTRA_LIBRARIES_GL $<TARGET_FILE:TBB::tbb>)
+set(PYTHON_EXTRA_LIBRARIES "")
+set(PYTHON_EXTRA_LIBRARIES_GL "")
 if (BUILD_GUI AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
     list(APPEND PYTHON_EXTRA_LIBRARIES ${CPP_LIBRARY}.1 ${CPPABI_LIBRARY})
     list(APPEND PYTHON_EXTRA_LIBRARIES_GL ${MESA_CPU_GL_LIBRARY})
@@ -148,9 +148,9 @@ message(STATUS "PYPI_PACKAGE_NAME: ${PYPI_PACKAGE_NAME}")
 # add the open3d python module first
 set(COMPILED_MODULE_PATH_LIST $<TARGET_FILE:pybind>)
 # add the open3d DSO / DLL if shared
-if (BUILD_SHARED_LIBS)
-    list(APPEND COMPILED_MODULE_PATH_LIST $<TARGET_FILE_DIR:pybind>/${_libopen3d_soname})
-endif()
+# if (BUILD_SHARED_LIBS)
+#     list(APPEND COMPILED_MODULE_PATH_LIST $<TARGET_FILE_DIR:pybind>/${_libopen3d_soname})
+# endif()
 
 set(GENERATED_OUTPUTS "")
 
