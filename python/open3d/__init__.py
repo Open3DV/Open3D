@@ -27,9 +27,39 @@ from pathlib import Path
 import warnings
 from open3d._build_config import _build_config
 
-if sys.platform == "win32":  # Unix: Use rpath to find libraries
-    _win32_dll_dir = os.add_dll_directory(str(Path(__file__).parent))
 
+def load_cdll(path):
+    """
+    Wrapper around ctypes.CDLL to take care of Windows compatibility.
+    """
+    path = Path(path)
+    if not path.is_file():
+        raise FileNotFoundError(f"Shared library file not found: {path}.")
+
+    if sys.platform == 'win32' and sys.version_info >= (3, 8):
+        # https://stackoverflow.com/a/64472088/1255535
+        return CDLL(str(path), winmode=0)
+    else:
+        return CDLL(str(path))
+
+
+if _build_config["BUILD_GUI"] and not (find_library("c++abi") or
+                                       find_library("c++")):
+    try:  # Preload libc++.so and libc++abi.so (required by filament)
+        load_cdll(str(next((Path(__file__).parent).glob("*c++abi.*"))))
+        load_cdll(str(next((Path(__file__).parent).glob("*c++.*"))))
+    except StopIteration:  # Not found: check system paths while loading
+        pass
+
+# Enable CPU rendering based on env vars
+if _build_config["BUILD_GUI"] and sys.platform.startswith("linux") and (
+        os.getenv("OPEN3D_CPU_RENDERING", default="") == "true"):
+    os.environ["LIBGL_DRIVERS_PATH"] = str(Path(__file__).parent)
+    load_cdll(Path(__file__).parent / "libEGL.so.1")
+    load_cdll(Path(__file__).parent / "libGL.so.1")
+
+if sys.platform == "win32":
+    _win32_dll_dir = os.add_dll_directory(str(Path(__file__).parent))
 if sys.platform == "win32":
     load_cdll(str(next((Path(__file__).parent / "bin").glob("*.dll*"))))
 
@@ -38,7 +68,7 @@ if _build_config["BUILD_CUDA_MODULE"]:
     # Load CPU pybind dll gracefully without introducing new python variable.
     # Do this before loading the CUDA pybind dll to correctly resolve symbols
     try:  # StopIteration if cpu version not available
-        CDLL(str(next((Path(__file__).parent / "cpu").glob("pybind*"))))
+        load_cdll(str(next((Path(__file__).parent / "cpu").glob("pybind*"))))
     except StopIteration:
         warnings.warn(
             "Open3D was built with CUDA support, but Open3D CPU Python "
@@ -63,7 +93,7 @@ if _build_config["BUILD_CUDA_MODULE"]:
 
         # Check CUDA availability without importing CUDA pybind symbols to
         # prevent "symbol already registered" errors if first import fails.
-        _pybind_cuda = CDLL(
+        _pybind_cuda = load_cdll(
             str(next((Path(__file__).parent / "cuda").glob("pybind*"))))
         if sys.platform != "win32":
             if _pybind_cuda.open3d_core_cuda_device_count() > 0:
@@ -132,8 +162,8 @@ __version__ = "@PROJECT_VERSION@"
 if int(sys.version_info[0]) < 3:
     raise Exception("Open3D only supports Python 3.")
 
-if (_build_config["BUILD_JUPYTER_EXTENSION"] and os.environ.get(
-        "OPEN3D_DISABLE_WEB_VISUALIZER", "False").lower() != "true"):
+if _build_config["BUILD_JUPYTER_EXTENSION"] and os.environ.get(
+        "OPEN3D_DISABLE_WEB_VISUALIZER", "False").lower() != "true":
     import platform
 
     if not (platform.machine().startswith("arm") or
@@ -204,10 +234,10 @@ def _jupyter_nbextension_paths():
         "section": "notebook",
         "src": "nbextension",
         "dest": "open3d",
-        "require": "open3d/extension",
+        "require": "open3d/extension"
     }]
 
 
 if sys.platform == "win32":
     _win32_dll_dir.close()
-del os, sys, CDLL, find_library, Path, warnings, _insert_pybind_names
+del os, sys, CDLL, load_cdll, find_library, Path, warnings, _insert_pybind_names
