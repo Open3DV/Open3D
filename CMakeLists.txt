@@ -430,14 +430,14 @@ if(BUILD_CUDA_MODULE)
             # https://docs.nvidia.com/cuda/ampere-compatibility-guide/index.html#application-compatibility-on-ampere
             # https://en.wikipedia.org/wiki/CUDA#GPUs_supported
             find_package(CUDAToolkit REQUIRED)
-            if(CUDAToolkit_VERSION VERSION_GREATER_EQUAL "11.8")
+            if(CUDAToolkit_VERSION VERSION_GREATER_EQUAL "12.8")
+                set(CMAKE_CUDA_ARCHITECTURES 75-real 80-real 86-real 89-real 90 120-real)
+            elseif(CUDAToolkit_VERSION VERSION_GREATER_EQUAL "11.8")
                 set(CMAKE_CUDA_ARCHITECTURES 75-real 80-real 86-real 89-real 90)    # Turing, Ampere, Ada Lovelace, Hopper
             elseif(CUDAToolkit_VERSION VERSION_GREATER_EQUAL "11.1")
                 set(CMAKE_CUDA_ARCHITECTURES 70-real 75-real 80-real 86)            # Volta, Turing, Ampere
             elseif(CUDAToolkit_VERSION VERSION_GREATER_EQUAL "11.0")
                 set(CMAKE_CUDA_ARCHITECTURES 60-real 70-real 72-real 75-real 80)    # Pascal, Volta, Turing, Ampere
-            elseif(CUDAToolkit_VERSION VERSION_GREATER_EQUAL "12.8")
-                set(CMAKE_CUDA_ARCHITECTURES 75-real 80-real 86-real 89-real 90 120-real)    # Kepler, Maxwell, Pascal, Turing, Ampere, Ada Lovelace, Hopper
             else()
                 set(CMAKE_CUDA_ARCHITECTURES 30-real 50-real 60-real 70-real 75)    # Kepler, Maxwell, Pascal, Turing
             endif()
