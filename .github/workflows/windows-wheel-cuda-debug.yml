@@ -37,7 +37,7 @@ env:
 jobs:
   build-cuda-wheel:
     name: Build wheel
-    runs-on: windows-2019
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       # https://github.community/t/how-to-conditionally-include-exclude-items-in-matrix-eg-based-on-branch/16853/6
@@ -60,10 +60,10 @@ jobs:
           python-version: ${{ matrix.python_version }}
 
       - name: Install CUDA 
-        uses: Jimver/cuda-toolkit@v0.2.8
+        uses: Jimver/cuda-toolkit@v0.2.20
         id: cuda-toolkit
         with:
-          cuda: '11.6.0'
+          cuda: '12.8.0'
 
       - name: Install Python dependencies
         working-directory: ${{ env.SRC_DIR }}
@@ -72,15 +72,20 @@ jobs:
           python -m pip install -r python/requirements.txt
           python -m pip install -r python/requirements_jupyter_build.txt
 
+      - name: Create build directories
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -Path "C:\Open3D\build\lib\python_package\open3d\lib" -ItemType Directory -Force
+
       - name: Config
         run: |
           $ErrorActionPreference = 'Stop'
-          New-Item -Path ${{ env.BUILD_DIR }} -ItemType Directory
+          New-Item -Path ${{ env.BUILD_DIR }} -ItemType Directory -Force
           cd ${{ env.BUILD_DIR }}
           if (${env:DEVELOPER_BUILD} -ne "OFF") {
             ${env:DEVELOPER_BUILD}="ON"
           }
-          cmake -G "Visual Studio 16 2019" -A x64 `
+          cmake -G "Visual Studio 17 2022" -A x64 `
             -DCMAKE_INSTALL_PREFIX="C:\Program Files\Open3D" `
             -DDEVELOPER_BUILD="${env:DEVELOPER_BUILD}" `
             -DCMAKE_SYSTEM_VERSION="10.0.19041.0" `
@@ -89,12 +94,17 @@ jobs:
             -DBUILD_COMMON_ISPC_ISAS=ON `
             -DENABLE_CACHED_CUDA_MANAGER=OFF `
             -DBUILD_AZURE_KINECT=ON `
-            -DBUILD_LIBREALSENSE=ON `
+            -DBUILD_LIBREALSENSE=OFF `
             -DBUILD_WEBRTC=OFF `
             -DBUILD_JUPYTER_EXTENSION=OFF `
             -DBUILD_CUDA_MODULE=ON `
             -DBUILD_EXAMPLES=OFF `
             ${{ env.SRC_DIR }}
+
+      - name: Create Python package directories
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -Path "${{ env.BUILD_DIR }}\lib\python_package\open3d\lib" -ItemType Directory -Force
 
       - name: Build Python package
         working-directory: ${{ env.BUILD_DIR }}

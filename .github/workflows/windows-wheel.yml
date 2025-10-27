@@ -37,7 +37,7 @@ env:
 jobs:
   build-wheel:
     name: Build wheel
-    runs-on: windows-2019
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       # https://github.community/t/how-to-conditionally-include-exclude-items-in-matrix-eg-based-on-branch/16853/6
@@ -69,12 +69,12 @@ jobs:
       - name: Config
         run: |
           $ErrorActionPreference = 'Stop'
-          New-Item -Path ${{ env.BUILD_DIR }} -ItemType Directory
+          New-Item -Path ${{ env.BUILD_DIR }} -ItemType Directory -Force
           cd ${{ env.BUILD_DIR }}
           if (${env:DEVELOPER_BUILD} -ne "OFF") {
             ${env:DEVELOPER_BUILD}="ON"
           }
-          cmake -G "Visual Studio 16 2019" -A x64 `
+          cmake -G "Visual Studio 17 2022" -A x64 `
             -DCMAKE_INSTALL_PREFIX="C:\Program Files\Open3D" `
             -DDEVELOPER_BUILD="${env:DEVELOPER_BUILD}" `
             -DCMAKE_SYSTEM_VERSION="10.0.19041.0" `
@@ -82,11 +82,16 @@ jobs:
             -DSTATIC_WINDOWS_RUNTIME=OFF `
             -DBUILD_COMMON_ISPC_ISAS=ON `
             -DBUILD_AZURE_KINECT=ON `
-            -DBUILD_LIBREALSENSE=ON `
+            -DBUILD_LIBREALSENSE=OFF `
             -DBUILD_WEBRTC=OFF `
             -DBUILD_JUPYTER_EXTENSION=OFF `
             -DBUILD_EXAMPLES=OFF `
             ${{ env.SRC_DIR }}
+
+      - name: Create Python package directories
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -Path "${{ env.BUILD_DIR }}\lib\python_package\open3d\lib" -ItemType Directory -Force
 
       - name: Build Python package
         working-directory: ${{ env.BUILD_DIR }}
